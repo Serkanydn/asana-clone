@@ -1,1 +1,1 @@
-module.exports.projectRoutes=require('./projectsRoute')
+module.exports.projectRoutes=require('./projectRoute')

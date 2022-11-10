@@ -2,7 +2,7 @@ const express = require('express');
 const helmet = require('helmet');
 const config = require('./config');
 const loaders = require('./loaders');
-const { projectRoutes } = require('./routes')
+const { projectRoutes, userRoutes } = require('./routes')
 
 config();
 loaders();
@@ -17,4 +17,5 @@ app.listen(process.env.APP_PORT, () => {
     console.log(`Listening port ${process.env.APP_PORT}`);
 
     app.use('/projects', projectRoutes)
+    app.use('/users', userRoutes)
 })

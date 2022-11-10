@@ -1,7 +1,7 @@
 const { Project } = require('../models');
 
-const insert = async (projectData) => {
-    const project = new Project(projectData);
+const insert = async (data) => {
+    const project = new Project(data);
     return await project.save();
 
 }

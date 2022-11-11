@@ -1,6 +1,7 @@
 const { insert, list, loginUser } = require('../services/userService');
 const httpStatus = require('http-status');
 const { passwordToHash } = require('../scripts/utils/cryptoHelper');
+const { generateAccessToken, generateRefreshToken } = require('../scripts/utils/authHelper');
 
 
 const create = async (req, res) => {
@@ -35,9 +36,18 @@ const login = async (req, res) => {
 
         req.body.password = passwordToHash(req.body.password);
 
-        const user = await loginUser(req.body);
+        let user = await loginUser(req.body);
 
-        if(!user) return res.status(httpStatus.NOT_FOUND).send({message:'Böyle bir kullanıcı bulunamadı.'});
+        if (!user) return res.status(httpStatus.NOT_FOUND).send({ message: 'Böyle bir kullanıcı bulunamadı.' });
+
+        user = {
+            ...user.toObject(),
+            tokens: {
+                accessToken: generateAccessToken(user),
+                refreshToken: generateRefreshToken(user),
+            }
+        }
+        delete user.password;
 
         res.status(httpStatus.OK).send(user);
 

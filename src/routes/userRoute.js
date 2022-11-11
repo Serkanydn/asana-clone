@@ -1,5 +1,5 @@
 //validate middlesware
-const validate = require('../middlewares/validate');
+const validate = require('../middlewares/validateMiddleware');
 //validations
 const schemas = require('../validations/userValidations');
 const express = require('express');

@@ -6,11 +6,20 @@ const insert = async (data) => {
 
 }
 
-const list = async () => {
-    return await Project.find()
+const list = async (where) => {
+    return await Project.find(where || {}).populate({
+        path: "userId",
+        select: "fullName email"
+    })
 }
 
+const modify = async (id, data) => {
+    return await Project.findByIdAndUpdate(id, data, { new: true });
+}
+
+
 module.exports = {
+    list,
     insert,
-    list
+    modify,
 }

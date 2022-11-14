@@ -12,11 +12,18 @@ const list = async () => {
 }
 
 const loginUser = async (data) => {
-    return await User.findOne(data )
+    return await User.findOne(data)
 }
+
+const modify = async (where, data) => {
+    return await User.findOneAndUpdate(where, data, { new: true })
+}
+
 
 module.exports = {
     insert,
     list,
-    loginUser
+    loginUser,
+    modify,
+
 }

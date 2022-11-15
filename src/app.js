@@ -4,7 +4,7 @@ const fileUpload = require('express-fileupload');
 const config = require('./config');
 const loaders = require('./loaders');
 const events = require('./scripts/events')
-const { projectRoutes, userRoutes } = require('./routes')
+const { projectRoutes, userRoutes, sectionRoutes } = require('./routes')
 const path=require('path');
 
 config();
@@ -23,4 +23,5 @@ app.listen(process.env.APP_PORT, () => {
 
     app.use('/projects', projectRoutes)
     app.use('/users', userRoutes)
+    app.use('/sections', sectionRoutes)
 })

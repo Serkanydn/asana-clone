@@ -8,7 +8,7 @@ const express = require('express');
 const { create, index, login, projectList, resetPassword, update, deleteUser, changePassword, updateProfileImage } = require('../controllers/userController');
 const router = express.Router();
 
-router.get('/', index);
+router.route('/').get(index);
 router.route('/').post(validate(schemas.createValidation), create);
 router.route('/').patch(authenticateToken, validate(schemas.updateValidation), update);
 router.route('/:id').delete(authenticateToken, deleteUser)

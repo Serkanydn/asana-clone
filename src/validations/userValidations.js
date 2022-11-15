@@ -23,10 +23,18 @@ const resetPasswordValidation = Joi.object({
     
 })
 
+const changePasswordValidation = Joi.object({
+    password: Joi.string().required().min(8),
+    
+})
+
+
 module.exports = {
     createValidation,
     loginValidation,
     resetPasswordValidation,
-    updateValidation
+    updateValidation,
+    changePasswordValidation,
+
 
 }

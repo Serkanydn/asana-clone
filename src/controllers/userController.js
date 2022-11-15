@@ -1,4 +1,4 @@
-const { insert, list, loginUser, modify } = require('../services/userService');
+const { insert, list, loginUser, modify, remove } = require('../services/userService');
 const projectService = require('../services/projectService');
 const httpStatus = require('http-status');
 const { passwordToHash } = require('../scripts/utils/cryptoHelper');
@@ -9,6 +9,7 @@ const nodemailer = require('nodemailer');
 
 const eventEmitter = require('../scripts/events/eventEmitter');
 const { response } = require('express');
+const path = require('path')
 
 const create = async (req, res) => {
     try {
@@ -113,12 +114,86 @@ const update = async (req, res) => {
     }
 }
 
+const changePassword = async (req, res) => {
+    try {
+
+        req.body.password = passwordToHash(req.body.password);
+        //! UI da şifre karşılaştırmalarına ilişkin kurallar burada olacaktır.
+        const updatedUser = await modify({ _id: req.user?._id }, req.body)
+
+        res.status(httpStatus.OK).json(updatedUser)
+    } catch (error) {
+        res.status(httpStatus.INTERNAL_SERVER_ERROR).send(error)
+    }
+}
+
+
+
+const deleteUser = async (req, res) => {
+    try {
+
+        if (!req.params.id)
+            return res.status(httpStatus.BAD_REQUEST).send({
+                message: 'Id bilgisi eksik.'
+            })
+
+        const result = await remove(req.params.id);
+
+        if (!result)
+            return res.status(httpStatus.BAD_REQUEST).send({
+                message: 'Böyle bir kayıt bulunamamaktadır.'
+            })
+
+        res.status(httpStatus.OK).send({
+            message: 'Kayıt Silinmiştir.'
+        })
+
+    } catch (error) {
+        res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+            error
+        })
+    }
+}
+const updateProfileImage = async (req, res) => {
+    try {
+
+        if (!req?.files?.profile_image)
+            return res.status(httpStatus.BAD_REQUEST).send({
+                error: 'Bu işlemi yapabilmek için yeterli veriye sahip değilsiniz.'
+            })
+
+        console.log(req.files);
+
+        const extension = path.extname(req.files.profile_image.name)
+        const fileName = `${req?.user._id}${extension}`;
+        const folderPath = path.join(__dirname, '../', 'uploads/users', fileName);
+
+        req.files.profile_image.mv(folderPath, async (err) => {
+            if (err) return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ err })
+
+            const updatedUser = await modify({ _id: req.user._id }, { profileImage: fileName })
+
+
+            return res.status(httpStatus.OK).send(updatedUser)
+        }) 
+
+    } catch (error) {
+        res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+            error
+        })
+    }
+}
+
 module.exports = {
     index,
     login,
     create,
     projectList,
     resetPassword,
-    update
+    update,
+    deleteUser,
+    changePassword,
+    updateProfileImage,
+
 
 }

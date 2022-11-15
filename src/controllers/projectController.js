@@ -1,4 +1,4 @@
-const { insert, list, modify } = require('../services/projectService');
+const { insert, list, modify, remove } = require('../services/projectService');
 const httpStatus = require('http-status')
 
 const index = async (req, res) => {
@@ -28,7 +28,6 @@ const create = async (req, res) => {
 
 const update = async (req, res) => {
     try {
-        console.log('req.params.id', req.params.id)
         if (!req.params.id) return res.status(httpStatus.BAD_REQUEST).send({
             message: 'Id bilgisi eksik.'
         })
@@ -36,6 +35,32 @@ const update = async (req, res) => {
         const result = await modify(req.params.id, req.body);
 
         res.status(httpStatus.OK).send(result)
+    } catch (error) {
+        res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+            error
+        })
+    }
+}
+
+const deleteProject = async (req, res) => {
+    try {
+
+        if (!req.params.id)
+            return res.status(httpStatus.BAD_REQUEST).send({
+                message: 'Id bilgisi eksik.'
+            })
+
+        const result = await remove(req.params.id);
+
+        if (!result)
+            return res.status(httpStatus.BAD_REQUEST).send({
+                message: 'Böyle bir kayıt bulunamamaktadır.'
+            })
+
+        res.status(httpStatus.OK).send({
+            message: 'Kayıt Silinmiştir.'
+        })
+
     } catch (error) {
         res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
             error
@@ -52,4 +77,6 @@ module.exports = {
     index,
     create,
     update,
+    deleteProject,
+
 }

@@ -20,10 +20,16 @@ const modify = async (where, data) => {
 }
 
 
+const remove = async (id) => {
+    return await User.findByIdAndDelete(id);
+}
+
+
 module.exports = {
     insert,
     list,
     loginUser,
     modify,
+    remove,
 
 }

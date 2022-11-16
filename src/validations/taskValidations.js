@@ -33,7 +33,14 @@ const updateValidation = Joi.object({
     subTasks: Joi.array(),
 })
 
+
+const commentValidation = Joi.object({
+    comment:Joi.string(),
+    _id:Joi.string().min(24)
+}) 
+
 module.exports = {
     createValidation,
-    updateValidation
+    updateValidation,
+    commentValidation
 }

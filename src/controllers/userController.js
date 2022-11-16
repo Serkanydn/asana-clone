@@ -162,7 +162,6 @@ const updateProfileImage = async (req, res) => {
                 error: 'Bu işlemi yapabilmek için yeterli veriye sahip değilsiniz.'
             })
 
-        console.log(req.files);
 
         const extension = path.extname(req.files.profile_image.name)
         const fileName = `${req?.user._id}${extension}`;

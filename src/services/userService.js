@@ -1,7 +1,6 @@
 const { User } = require('../models');
 
 const insert = async (data) => {
-    console.log(data);
     const user = new User(data);
     return await user.save();
 

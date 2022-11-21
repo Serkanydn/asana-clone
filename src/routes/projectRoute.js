@@ -3,21 +3,21 @@ const validate = require('../middlewares/validateMiddleware');
 //validations
 const schemas = require('../validations/projectValidations');
 const express = require('express');
-const { index, create, update, deleteProject } = require('../controllers/projectController');
+const { projectController } = require('../controllers');
 const { authenticateToken } = require('../middlewares/authenticateMiddleware')
 const router = express.Router();
 
 router.route('/')
-    .get(authenticateToken, index);
+    .get(authenticateToken, projectController.index);
 
 router.route('/')
-    .post(authenticateToken, validate(schemas.createValidation), create);
+    .post(authenticateToken, validate(schemas.createValidation), projectController.create);
 
 router.route('/:id')
-    .delete(authenticateToken, deleteProject)
+    .delete(authenticateToken, projectController.deleteProject)
 
 router.route('/:id')
-    .patch(authenticateToken, validate(schemas.updateValidation), update)
+    .patch(authenticateToken, validate(schemas.updateValidation), projectController.update)
 
 module.exports = router
 

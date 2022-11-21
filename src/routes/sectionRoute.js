@@ -3,14 +3,14 @@ const validate = require('../middlewares/validateMiddleware');
 //validations
 const schemas = require('../validations/sectionValidations');
 const express = require('express');
-const { index, create, update, deleteSection } = require('../controllers/sectionController');
+const { sectionController } = require('../controllers');
 const { authenticateToken } = require('../middlewares/authenticateMiddleware')
 const router = express.Router();
 
-router.route('/:projectId').get(authenticateToken, index);
-router.route('/').post(authenticateToken, validate(schemas.createValidation), create);
-router.route('/:id').patch(authenticateToken, validate(schemas.updateValidation), update)
-router.route('/:id').delete(authenticateToken, deleteSection)
+router.route('/:projectId').get(authenticateToken, sectionController.index);
+router.route('/').post(authenticateToken, validate(schemas.createValidation), sectionController.create);
+router.route('/:id').patch(authenticateToken, validate(schemas.updateValidation), sectionController.update)
+router.route('/:id').delete(authenticateToken, sectionController.deleteSection)
 
 module.exports = router
 

@@ -1,5 +1,6 @@
 const httpStatus = require('http-status')
 const { projectService } = require('../services')
+const ApiError = require('../errors/apiError');
 
 class ProjectController {
 
@@ -29,7 +30,7 @@ class ProjectController {
     }
 
 
-    async update(req, res) {
+    async update(req, res, next) {
         try {
             if (!req.params.id) return res.status(httpStatus.BAD_REQUEST).send({
                 message: 'Id bilgisi eksik.'
@@ -37,11 +38,12 @@ class ProjectController {
 
             const result = await projectService.update(req.params.id, req.body);
 
+            if (!result)
+                return next(ApiError.notFound())
+
             res.status(httpStatus.OK).send(result)
         } catch (error) {
-            res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
-                error
-            })
+            next(new ApiError(error?.message));
         }
     }
 

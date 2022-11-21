@@ -1,6 +1,4 @@
-//middlesware
-const validate = require('../middlewares/validateMiddleware');
-const { authenticateToken } = require('../middlewares/authenticateMiddleware')
+const { authenticateToken,validate,idChecker } = require('../middlewares')
 
 //validations
 const schemas = require('../validations/userValidations');
@@ -11,7 +9,7 @@ const router = express.Router();
 router.route('/').get(userController.index);
 router.route('/').post(validate(schemas.createValidation), userController.create);
 router.route('/').patch(authenticateToken, validate(schemas.updateValidation), userController.update);
-router.route('/:id').delete(authenticateToken, userController.deleteUser)
+router.route('/:id').delete(idChecker(),authenticateToken, userController.deleteUser)
 router.route('/login').post(validate(schemas.loginValidation), userController.login);
 router.route('/projects').get(authenticateToken, userController.projectList);
 router.route('/change-password').post(authenticateToken, validate(schemas.changePasswordValidation), userController.changePassword);

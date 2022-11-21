@@ -1,35 +1,17 @@
-const { Section } = require('../models');
+const BaseService = require("./baseService");
+const { Section } = require("../models");
 
-const insert = async (data) => {
-    const project = new Section(data);
-    return await project.save();
+class SectionService extends BaseService {
+
+    async list(where) {
+        return await this.model.find(where || {}).populate({
+            path: "userId",
+            select: "fullName email profileImage"
+        })
+    }
+
+
 
 }
 
-const list = async (where) => {
-    return await Section.find(where || {})
-    .populate({
-        path: "userId",
-        select: "fullName email profileImage"
-    })
-    // .populate({
-    //     path: "projectId",
-    //     select: "name"
-    // })
-}
-
-const modify = async (id, data) => {
-    return await Section.findByIdAndUpdate(id, data, { new: true });
-}
-
-const remove = async (id) => {
-    return await Section.findByIdAndDelete(id);
-}
-
-
-module.exports = {
-    list,
-    insert,
-    modify,
-    remove
-}
+module.exports = new SectionService(Section);

@@ -1,5 +1,5 @@
-const { insert, list, modify, remove, findOne } = require('../services/taskService');
 const httpStatus = require('http-status')
+const { taskService } = require('../services')
 
 const index = async (req, res) => {
     try {
@@ -8,7 +8,7 @@ const index = async (req, res) => {
                 error: 'Proje Bilgisi Eksik.'
             })
 
-        const sections = await list({ projectId: req.params.projectId });
+        const sections = await taskService.list({ projectId: req.params.projectId });
         res.status(httpStatus.OK).send(sections);
 
     } catch (error) {
@@ -21,7 +21,7 @@ const index = async (req, res) => {
 const create = async (req, res) => {
     try {
         req.body.userId = req.user;
-        const result = await insert(req.body)
+        const result = await taskService.create(req.body)
         res.status(httpStatus.CREATED).send(result)
     } catch (error) {
         res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
@@ -36,7 +36,7 @@ const update = async (req, res) => {
             message: 'Id bilgisi eksik.'
         })
 
-        const updatedDoc = await modify(req.params.id, req.body);
+        const updatedDoc = await taskService.update(req.params.id, req.body);
 
         res.status(httpStatus.OK).send(updatedDoc)
     } catch (error) {
@@ -54,7 +54,7 @@ const deleteTask = async (req, res) => {
                 message: 'Id bilgisi eksik.'
             })
 
-        const result = await remove(req.params.id);
+        const result = await taskService.delete(req.params.id);
 
         if (!result)
             return res.status(httpStatus.BAD_REQUEST).send({
@@ -77,7 +77,7 @@ const deleteTask = async (req, res) => {
 const makeComment = async (req, res) => {
     try {
 
-        const mainTask = await findOne({ _id: req.params.id })
+        const mainTask = await taskService.findOne({ _id: req.params.id })
 
         if (!mainTask)
             res.status(httpStatus.NOT_FOUND).json({
@@ -106,7 +106,7 @@ const makeComment = async (req, res) => {
 const deleteComment = async (req, res) => {
     try {
 
-        const mainTask = await findOne({ _id: req.params.id })
+        const mainTask = await taskService.findOne({ _id: req.params.id })
 
         if (!mainTask)
             return res.status(httpStatus.NOT_FOUND).json({
@@ -134,7 +134,7 @@ const addSubTask = async (req, res) => {
         })
 
 
-        const mainTask = await findOne({ _id: req.params.id })
+        const mainTask = await taskService.findOne({ _id: req.params.id })
 
         if (!mainTask)
             return res.status(httpStatus.NOT_FOUND).json({
@@ -142,7 +142,7 @@ const addSubTask = async (req, res) => {
             })
 
         req.body.userId = req.user;
-        const subTask = await insert({ ...req.body, userId: req.user })
+        const subTask = await taskService.create({ ...req.body, userId: req.user })
 
         mainTask.subTasks.push(subTask);
 
@@ -164,7 +164,7 @@ const fetchTask = async (req, res) => {
             message: 'Id bilgisi eksik.'
         })
 
-        const mainTask = await findOne({ _id: req.params.id },true)
+        const mainTask = await taskService.findOne({ _id: req.params.id }, true)
 
         if (!mainTask)
             return res.status(httpStatus.NOT_FOUND).json({
@@ -188,7 +188,7 @@ module.exports = {
     makeComment,
     deleteComment,
     addSubTask,
-fetchTask,
+    fetchTask,
 
 
 

@@ -1,5 +1,5 @@
-const { insert, list, modify, remove } = require('../services/sectionService');
 const httpStatus = require('http-status')
+const { sectionService } = require('../services')
 
 const index = async (req, res) => {
     try {
@@ -8,7 +8,15 @@ const index = async (req, res) => {
                 error: 'Proje Bilgisi Eksik.'
             })
 
-        const sections = await list({ projectId: req.params.projectId });
+        console.log(req.params.projectId);
+        const sections = await sectionService.list({ projectId: req.params.projectId });
+
+        console.log("sections",sections);
+        if (!sections)
+            return res.status(httpStatus.BAD_REQUEST).json({
+                error: 'Böyle bir kayıt bulunamadı.'
+            })
+
         res.status(httpStatus.OK).send(sections);
 
     } catch (error) {
@@ -21,7 +29,7 @@ const index = async (req, res) => {
 const create = async (req, res) => {
     try {
         req.body.userId = req.user;
-        const result = await insert(req.body)
+        const result = await sectionService.create(req.body)
         res.status(httpStatus.CREATED).send(result)
     } catch (error) {
         res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
@@ -36,7 +44,7 @@ const update = async (req, res) => {
             message: 'Id bilgisi eksik.'
         })
 
-        const updatedDoc = await modify(req.params.id, req.body);
+        const updatedDoc = await sectionService.update(req.params.id, req.body);
 
         res.status(httpStatus.OK).send(updatedDoc)
     } catch (error) {
@@ -54,7 +62,7 @@ const deleteSection = async (req, res) => {
                 message: 'Id bilgisi eksik.'
             })
 
-        const result = await remove(req.params.id);
+        const result = await sectionService.delete(req.params.id);
 
         if (!result)
             return res.status(httpStatus.BAD_REQUEST).send({

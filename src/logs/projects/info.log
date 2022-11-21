@@ -7,3 +7,4 @@
 {"level":"info","message":{"_id":"637283a9f1302e107567cda7","createdAt":"2022-11-14T18:06:33.241Z","name":"Test Project 2","updatedAt":"2022-11-14T18:06:33.241Z","userId":"636d68437f8cebd436189cad"},"service":"projectService "}
 {"level":"info","message":{"_id":"637280e6aebfb818e33fcacc","createdAt":"2022-11-14T17:54:46.605Z","name":"Test Project 1 Update","updatedAt":"2022-11-14T18:15:55.645Z","userId":"636d68437f8cebd436189cad"},"service":"projectService "}
 {"level":"info","message":{"_id":"6373ebeca9db3cb1d689b4da","createdAt":"2022-11-15T19:43:40.693Z","name":"Test Project 3","updatedAt":"2022-11-15T19:43:40.693Z","userId":"636d68437f8cebd436189cad"},"service":"projectService "}
+{"level":"info","message":{"_id":"637be1e15b2916d55d1dfefb","createdAt":"2022-11-21T20:38:57.286Z","name":"Test Project 2","updatedAt":"2022-11-21T20:38:57.286Z","userId":"636d68437f8cebd436189cad"},"service":"projectService "}

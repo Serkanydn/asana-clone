@@ -1,21 +1,18 @@
 const { insert, list, loginUser, modify, remove } = require('../services/userService');
-const projectService = require('../services/projectService');
+const { userService, projectService } = require('../services');
 const httpStatus = require('http-status');
 const { passwordToHash } = require('../scripts/utils/cryptoHelper');
 const { generateAccessToken, generateRefreshToken } = require('../scripts/utils/authHelper');
-const project = require('../models/project');
 const uuid = require('uuid')
-const nodemailer = require('nodemailer');
-
-const eventEmitter = require('../scripts/events/eventEmitter');
-const { response } = require('express');
 const path = require('path')
+const eventEmitter = require('../scripts/events/eventEmitter');
+
 
 const create = async (req, res) => {
     try {
 
         req.body.password = passwordToHash(req.body.password);
-        const result = await insert(req.body);
+        const result = await userService.create(req.body);
         res.status(httpStatus.CREATED).send(result);
 
     } catch (error) {
@@ -28,7 +25,7 @@ const create = async (req, res) => {
 const index = async (req, res) => {
     try {
 
-        const users = await list();
+        const users = await userService.list();
         res.status(httpStatus.OK).send(users);
 
     } catch (error) {
@@ -43,7 +40,7 @@ const login = async (req, res) => {
 
         req.body.password = passwordToHash(req.body.password);
 
-        let user = await loginUser(req.body);
+        let user = await userService.findOne(req.body);
 
         if (!user) return res.status(httpStatus.NOT_FOUND).send({ message: 'Böyle bir kullanıcı bulunamadı.' });
 
@@ -81,7 +78,7 @@ const resetPassword = async (req, res) => {
 
         const newPassword = uuid.v4()?.split('-')[0] || `usr-${new Date().getTime()}`;
 
-        const updatedUser = await modify({ email: req.body.email }, { password: passwordToHash(newPassword) })
+        const updatedUser = await userService.updateWhere({ email: req.body.email }, { password: passwordToHash(newPassword) })
 
         if (!updatedUser) return res.status(httpStatus.NOT_FOUND).json({
             succeded: false,
@@ -106,7 +103,7 @@ const resetPassword = async (req, res) => {
 
 const update = async (req, res) => {
     try {
-        const updatedUser = await modify({ _id: req.user?._id }, req.body)
+        const updatedUser = await userService.update(req.user?._id, req.body)
 
         res.status(httpStatus.OK).json(updatedUser)
     } catch (error) {
@@ -119,7 +116,7 @@ const changePassword = async (req, res) => {
 
         req.body.password = passwordToHash(req.body.password);
         //! UI da şifre karşılaştırmalarına ilişkin kurallar burada olacaktır.
-        const updatedUser = await modify({ _id: req.user?._id }, req.body)
+        const updatedUser = await userService.update(req.user?._id, req.body)
 
         res.status(httpStatus.OK).json(updatedUser)
     } catch (error) {
@@ -137,7 +134,7 @@ const deleteUser = async (req, res) => {
                 message: 'Id bilgisi eksik.'
             })
 
-        const result = await remove(req.params.id);
+        const result = await userService.delete(req.params.id);
 
         if (!result)
             return res.status(httpStatus.BAD_REQUEST).send({
@@ -170,11 +167,11 @@ const updateProfileImage = async (req, res) => {
         req.files.profile_image.mv(folderPath, async (err) => {
             if (err) return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ err })
 
-            const updatedUser = await modify({ _id: req.user._id }, { profileImage: fileName })
+            const updatedUser = await userService.update( req.user._id , { profileImage: fileName })
 
 
             return res.status(httpStatus.OK).send(updatedUser)
-        }) 
+        })
 
     } catch (error) {
         res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
